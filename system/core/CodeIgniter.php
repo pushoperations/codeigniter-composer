@@ -250,7 +250,11 @@ if ( ! file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_cl
 // Namespacing CI
 $_NS = '';
 
-include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+if (file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php')) {
+    include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+} else {
+    include(APPPATH.'controllers/'.$RTR->fetch_directory().ucfirst($RTR->fetch_class()).'.php');
+}
 
 // Set a mark point for benchmarking
 $BM->mark('loading_time:_base_classes_end');

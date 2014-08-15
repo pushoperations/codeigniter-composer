@@ -363,7 +363,13 @@ class CI_Router {
 	function _parse_routes()
 	{
 		// Turn the segment array into a URI string
-		$uri = implode('/', $this->uri->segments);
+        // # are delimiters:
+        // http://php.net/manual/en/regexp.reference.delimiters.php
+
+        $segments = $this->uri->segments;
+        $segments[1] = ucfirst($segments[1]);
+
+		$uri = implode('/', $segments);
 
 		// Is there a literal match?  If so we're done
 		if (isset($this->routes[$uri]))
@@ -378,12 +384,12 @@ class CI_Router {
 			$key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key));
 
 			// Does the RegEx match?
-			if (preg_match('#^'.$key.'$#', $uri))
+			if (preg_match('#^'.$key.'$#i', $uri))
 			{
 				// Do we have a back-reference?
 				if (strpos($val, '$') !== FALSE AND strpos($key, '(') !== FALSE)
 				{
-					$val = preg_replace('#^'.$key.'$#', $val, $uri);
+					$val = preg_replace('#^'.$key.'$#i', $val, $uri);
 				}
 
 				return $this->_set_request(explode('/', $val));
