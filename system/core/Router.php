@@ -367,7 +367,9 @@ class CI_Router {
         // http://php.net/manual/en/regexp.reference.delimiters.php
 
         $segments = $this->uri->segments;
-        $segments[1] = ucfirst($segments[1]);
+        if (isset($segments[1])) {
+            $segments[1] = ucfirst($segments[1]);
+        }
 
 		$uri = implode('/', $segments);
 
