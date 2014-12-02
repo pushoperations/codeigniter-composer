@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use Illuminate\Routing\Controller;
+
 /**
  * CodeIgniter
  *
@@ -27,7 +30,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://codeigniter.com/user_guide/general/controllers.html
  */
-class CI_Controller {
+class CI_Controller extends Controller {
 
 	private static $instance;
 

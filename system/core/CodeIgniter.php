@@ -233,10 +233,26 @@ function &get_instance()
     return CI_Controller::get_instance();
 }
 
-
 if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'))
 {
     require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
+}
+
+// Illuminate router
+try {
+    // Get the request
+    $request = $app['request'];
+    // Dispatch the router
+    $response = $app['router']->dispatch($request);
+    // Send the response
+    $response->send();
+} catch (\Exception $e) {
+    // If CodeIgniter doesn't have the route then show 404.
+    if (isset($set_404) && $set_404) {
+        $_error =& load_class('Exceptions', 'core');
+        $_error->show_404();
+        exit;
+    }
 }
 
 // Load the local application controller

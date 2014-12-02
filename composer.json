@@ -1,8 +1,9 @@
 {
-	"description" : "A way to install CodeIgniter via composer",
-	"name" : "rogeriopradoj/codeigniter",
-    "license": "OSL-3.0",
-	"require": {
-		"php": ">=5.2.4"
-	}
+  "description" : "A way to install CodeIgniter via composer",
+  "name" : "rogeriopradoj/codeigniter",
+  "license": "OSL-3.0",
+  "require": {
+    "php": ">=5.2.4",
+    "illuminate/routing": "4.2.*"
+  }
 }
