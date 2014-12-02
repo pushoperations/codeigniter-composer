@@ -41,27 +41,24 @@ define('CI_VERSION', '2.1.4');
  * @var boolean
  *
  */
-define('CI_CORE', FALSE);
+define('CI_CORE', false);
 
 /*
  * ------------------------------------------------------
  *  Load the global functions
  * ------------------------------------------------------
  */
-require(BASEPATH.'core/Common.php');
+require BASEPATH.'core/Common.php';
 
 /*
  * ------------------------------------------------------
  *  Load the framework constants
  * ------------------------------------------------------
  */
-if (defined('ENVIRONMENT') AND file_exists(APPPATH.'config/'.ENVIRONMENT.'/constants.php'))
-{
-    require(APPPATH.'config/'.ENVIRONMENT.'/constants.php');
-}
-else
-{
-    require(APPPATH.'config/constants.php');
+if (defined('ENVIRONMENT') and file_exists(APPPATH.'config/'.ENVIRONMENT.'/constants.php')) {
+    require APPPATH.'config/'.ENVIRONMENT.'/constants.php';
+} else {
+    require APPPATH.'config/constants.php';
 }
 
 /*
@@ -71,8 +68,7 @@ else
  */
 set_error_handler('_exception_handler');
 
-if ( ! is_php('5.3'))
-{
+if ( ! is_php('5.3')) {
     @set_magic_quotes_runtime(0); // Kill magic quotes
 }
 
@@ -92,8 +88,7 @@ if ( ! is_php('5.3'))
  * Note: Since the config file data is cached it doesn't
  * hurt to load it here.
  */
-if (isset($assign_to_config['subclass_prefix']) AND $assign_to_config['subclass_prefix'] != '')
-{
+if (isset($assign_to_config['subclass_prefix']) and $assign_to_config['subclass_prefix'] != '') {
     get_config(array('subclass_prefix' => $assign_to_config['subclass_prefix']));
 }
 
@@ -102,8 +97,7 @@ if (isset($assign_to_config['subclass_prefix']) AND $assign_to_config['subclass_
  *  Set a liberal script execution time limit
  * ------------------------------------------------------
  */
-if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
-{
+if (function_exists("set_time_limit") == true and @ini_get("safe_mode") == 0) {
     @set_time_limit(300);
 }
 
@@ -138,8 +132,7 @@ $EXT->_call_hook('pre_system');
 $CFG =& load_class('Config', 'core');
 
 // Do we have any manually set config items in the index.php file?
-if (isset($assign_to_config))
-{
+if (isset($assign_to_config)) {
     $CFG->_assign_to_config($assign_to_config);
 }
 
@@ -173,8 +166,7 @@ $RTR =& load_class('Router', 'core');
 $RTR->_set_routing();
 
 // Set any routing overrides that may exist in the main index file
-if (isset($routing))
-{
+if (isset($routing)) {
     $RTR->_set_overrides($routing);
 }
 
@@ -190,10 +182,8 @@ $OUT =& load_class('Output', 'core');
  *	Is there a valid cache file?  If so, we're done...
  * ------------------------------------------------------
  */
-if ($EXT->_call_hook('cache_override') === FALSE)
-{
-    if ($OUT->_display_cache($CFG, $URI) == TRUE)
-    {
+if ($EXT->_call_hook('cache_override') === false) {
+    if ($OUT->_display_cache($CFG, $URI) == true) {
         exit;
     }
 }
@@ -210,7 +200,7 @@ $SEC =& load_class('Security', 'core');
  *  Load the Input class and sanitize globals
  * ------------------------------------------------------
  */
-$IN	=& load_class('Input', 'core');
+$IN    =& load_class('Input', 'core');
 
 /*
  * ------------------------------------------------------
@@ -233,8 +223,7 @@ function &get_instance()
     return CI_Controller::get_instance();
 }
 
-if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'))
-{
+if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php')) {
     require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
 }
 
@@ -258,8 +247,7 @@ try {
 // Load the local application controller
 // Note: The Router class automatically validates the controller path using the router->_validate_request().
 // If this include fails it means that the default controller in the Routes.php file is not resolving to something valid.
-if ( ! file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php'))
-{
+if ( ! file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php')) {
     show_error('Unable to load your default controller. Please make sure the controller specified in your Routes.php file is valid.');
 }
 
@@ -267,9 +255,9 @@ if ( ! file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_cl
 $_NS = '';
 
 if (file_exists(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php')) {
-    include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+    include APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php';
 } else {
-    include(APPPATH.'controllers/'.$RTR->fetch_directory().ucfirst($RTR->fetch_class()).'.php');
+    include APPPATH.'controllers/'.$RTR->fetch_directory().ucfirst($RTR->fetch_class()).'.php';
 }
 
 // Set a mark point for benchmarking
@@ -289,27 +277,22 @@ $class  = $_NS . '\\' . $RTR->fetch_class();
 $method = $RTR->fetch_method();
 
 if ( ! class_exists($class)
-    OR strncmp($method, '_', 1) == 0
-    OR in_array(strtolower($method), array_map('strtolower', get_class_methods('CI_Controller')))
+    or strncmp($method, '_', 1) == 0
+    or in_array(strtolower($method), array_map('strtolower', get_class_methods('CI_Controller')))
 )
 {
-    if ( ! empty($RTR->routes['404_override']))
-    {
+    if ( ! empty($RTR->routes['404_override'])) {
         $x = explode('/', $RTR->routes['404_override']);
         $class = $x[0];
         $method = (isset($x[1]) ? $x[1] : 'index');
-        if ( ! class_exists($class))
-        {
-            if ( ! file_exists(APPPATH.'controllers/'.$class.'.php'))
-            {
+        if ( ! class_exists($class)) {
+            if ( ! file_exists(APPPATH.'controllers/'.$class.'.php')) {
                 show_404("{$class}/{$method}");
             }
 
-            include_once(APPPATH.'controllers/'.$class.'.php');
+            include_once APPPATH.'controllers/'.$class.'.php';
         }
-    }
-    else
-    {
+    } else {
         show_404("{$class}/{$method}");
     }
 }
@@ -344,36 +327,27 @@ $EXT->_call_hook('post_controller_constructor');
  * ------------------------------------------------------
  */
 // Is there a "remap" function? If so, we call it instead
-if (method_exists($CI, '_remap'))
-{
+if (method_exists($CI, '_remap')) {
     $CI->_remap($method, array_slice($URI->rsegments, 2));
-}
-else
-{
+} else {
     // is_callable() returns TRUE on some versions of PHP 5 for private and protected
     // methods, so we'll use this workaround for consistent behavior
-    if ( ! in_array(strtolower($method), array_map('strtolower', get_class_methods($CI))))
-    {
+    if ( ! in_array(strtolower($method), array_map('strtolower', get_class_methods($CI)))) {
         // Check and see if we are using a 404 override and use it.
-        if ( ! empty($RTR->routes['404_override']))
-        {
+        if ( ! empty($RTR->routes['404_override'])) {
             $x = explode('/', $RTR->routes['404_override']);
             $class = $x[0];
             $method = (isset($x[1]) ? $x[1] : 'index');
-            if ( ! class_exists($class))
-            {
-                if ( ! file_exists(APPPATH.'controllers/'.$class.'.php'))
-                {
+            if ( ! class_exists($class)) {
+                if ( ! file_exists(APPPATH.'controllers/'.$class.'.php')) {
                     show_404("{$class}/{$method}");
                 }
 
-                include_once(APPPATH.'controllers/'.$class.'.php');
+                include_once APPPATH.'controllers/'.$class.'.php';
                 unset($CI);
                 $CI = new $class();
             }
-        }
-        else
-        {
+        } else {
             show_404("{$class}/{$method}");
         }
     }
@@ -382,7 +356,6 @@ else
     // Any URI segments present (besides the class/function) will be passed to the method for convenience
     call_user_func_array(array(&$CI, $method), array_slice($URI->rsegments, 2));
 }
-
 
 // Mark a benchmark end point
 $BM->mark('controller_execution_time_( '.$class.' / '.$method.' )_end');
@@ -399,8 +372,7 @@ $EXT->_call_hook('post_controller');
  *  Send the final rendered output to the browser
  * ------------------------------------------------------
  */
-if ($EXT->_call_hook('display_override') === FALSE)
-{
+if ($EXT->_call_hook('display_override') === false) {
     $OUT->_display();
 }
 
@@ -416,11 +388,6 @@ $EXT->_call_hook('post_system');
  *  Close the DB connection if one exists
  * ------------------------------------------------------
  */
-if (class_exists('CI_DB') AND isset($CI->db))
-{
+if (class_exists('CI_DB') and isset($CI->db)) {
     $CI->db->close();
 }
-
-
-/* End of file CodeIgniter.php */
-/* Location: ./system/core/CodeIgniter.php */
