@@ -227,24 +227,45 @@ if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'
     require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
 }
 
-// Illuminate router
-try {
-    // Get the request
-    $request = $app['request'];
-    // Dispatch the router
-    $response = $app['router']->dispatch($request);
-    // Send the response
-    $response->send();
-} catch (Exception $e) {
-    // If CodeIgniter doesn't have the route then show 404.
-    if (isset($set_404) && $set_404) {
-        $_error =& load_class('Exceptions', 'core');
-        $_error->show_404();
-        exit;
-    } else {
-        if ($app['env'] != 'production') {
-            throw new RuntimeException('404: route not found.', 0, $e);
+
+if (php_sapi_name() != 'cli') {
+    try {
+        // Illuminate routing
+        // Get the request
+        $request = $app['request'];
+
+        if (method_exists($app, 'getStackedClientBack')) {
+            // Get the HTTP stack
+            $stack = $app->getStackedClientBack();
+
+            // Dispatch the router
+            $response = with($stack)->handle($request);
+        } else {
+            $response = $app['router']->dispatch($request);
+            // Send the response
+            $response->send();
         }
+
+        if ($response->getStatusCode() !== 404) {
+            // Send the response
+            $response->send();
+
+            return $stack->terminate($request, $response);
+        } else {
+            // If CodeIgniter doesn't have the route then show 404.
+            if (isset($set_404) && $set_404) {
+                if ($app['config']['app.debug']) {
+                    throw new \RuntimeException('404: route not found.');
+                } else {
+                    $_error =& load_class('Exceptions', 'core');
+                    $_error->show_404();
+                }
+
+                exit;
+            }
+        }
+    } catch (Exception $e) {
+        // Let CI deal with it.
     }
 }
 
