@@ -235,12 +235,16 @@ try {
     $response = $app['router']->dispatch($request);
     // Send the response
     $response->send();
-} catch (\Exception $e) {
+} catch (Exception $e) {
     // If CodeIgniter doesn't have the route then show 404.
     if (isset($set_404) && $set_404) {
         $_error =& load_class('Exceptions', 'core');
         $_error->show_404();
         exit;
+    } else {
+        if ($app['env'] != 'production') {
+            throw new RuntimeException('404: route not found.', 0, $e);
+        }
     }
 }
 
