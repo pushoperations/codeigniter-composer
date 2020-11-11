@@ -673,6 +673,8 @@ class CI_Session {
 					$this->cookie_domain,
 					$this->cookie_secure
 				);
+
+		$_COOKIE[$this->sess_cookie_name] = $cookie_data;
 	}
 
 	// --------------------------------------------------------------------
