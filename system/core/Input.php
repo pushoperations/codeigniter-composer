@@ -348,7 +348,7 @@ class CI_Input {
 		}
 		else
 		{
-            $this->ip_address = $this->server('remote_addr');
+			$this->ip_address = $this->server('HTTP_X_FORWARDED_FOR') ?: $this->server('REMOTE_ADDR');
 		}
 
 		if ( ! $this->valid_ip($this->ip_address))
